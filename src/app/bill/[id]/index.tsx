@@ -1,6 +1,6 @@
 import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
-import { Alert, Platform, Pressable, ScrollView, View } from 'react-native'
+import { useMemo, useRef, useState } from 'react'
+import { Alert, Platform, Pressable, ScrollView, View, type TextInput } from 'react-native'
 import { Body, Button, Card, Divider, EmptyState, Field, Label, Row, Screen, Title } from '../../../components/ui'
 import { formatMoney, parseAmount } from '../../../lib/money'
 import { settle } from '../../../lib/settle'
@@ -39,6 +39,11 @@ export default function BillScreen() {
   const [label, setLabel] = useState('')
   const [amount, setAmount] = useState('')
   const [amountError, setAmountError] = useState<string | null>(null)
+  // A table of four is typed in one go: after each add, the cursor goes back
+  // to where the next name or dish is entered.
+  const nameInput = useRef<TextInput>(null)
+  const itemInput = useRef<TextInput>(null)
+  const priceInput = useRef<TextInput>(null)
 
   const settlement = useMemo(() => (bill ? settle(bill) : null), [bill])
 
@@ -76,6 +81,14 @@ export default function BillScreen() {
     addItem(bill.id, label, cents, [])
     setLabel('')
     setAmount('')
+    itemInput.current?.focus()
+  }
+
+  const submitPerson = () => {
+    if (!name.trim()) return
+    addParticipant(bill.id, name)
+    setName('')
+    nameInput.current?.focus()
   }
 
   return (
@@ -115,27 +128,21 @@ export default function BillScreen() {
 
           <Row>
             <Field
+              ref={nameInput}
               label="Add a person"
               placeholder="Ada"
               value={name}
               onChangeText={setName}
-              returnKeyType="done"
-              onSubmitEditing={() => {
-                if (!name.trim()) return
-                addParticipant(bill.id, name)
-                setName('')
-              }}
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={submitPerson}
             />
             <Button
               title="Add"
               accessibilityLabel="Add person"
               compact
               style={{ marginTop: 18 }}
-              onPress={() => {
-                if (!name.trim()) return
-                addParticipant(bill.id, name)
-                setName('')
-              }}
+              onPress={submitPerson}
             />
           </Row>
         </Card>
@@ -216,8 +223,18 @@ export default function BillScreen() {
           )}
 
           <Row style={{ alignItems: 'flex-end' }}>
-            <Field label="Item" placeholder="Pasta" value={label} onChangeText={setLabel} />
             <Field
+              ref={itemInput}
+              label="Item"
+              placeholder="Pasta"
+              value={label}
+              onChangeText={setLabel}
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={() => priceInput.current?.focus()}
+            />
+            <Field
+              ref={priceInput}
               label="Price"
               placeholder="12.50"
               value={amount}
@@ -227,6 +244,7 @@ export default function BillScreen() {
               }}
               inputMode="decimal"
               keyboardType="decimal-pad"
+              submitBehavior="submit"
               onSubmitEditing={submitItem}
               style={{ maxWidth: 110 }}
             />
