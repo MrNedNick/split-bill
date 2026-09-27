@@ -3,6 +3,9 @@
 Split a restaurant bill between friends: who ordered what, who shared what, tips
 and rounding — and a total that always adds up to the cent.
 
+**[Open the web demo](https://mrnednick.github.io/split-bill/)** — the same
+screens as the iOS app, running in the browser.
+
 <p>
   <img src="docs/bill.png" alt="The bill screen: people, items and who shares each one" width="290" />
   <img src="docs/summary.png" alt="The summary: per-person totals, tip and the shareable text" width="290" />
@@ -108,20 +111,20 @@ Both regressions introduced on purpose while writing them (a tip split evenly
 instead of by what each person ordered, and a repeat that carried the items
 over) were caught by the suite.
 
-CI runs lint → typecheck → test → web build on every push.
+CI runs lint → typecheck → test → web build on every push, and a push to `main`
+deploys the web build to GitHub Pages.
 
 ## Deploy
 
-`vercel.json` is committed: the web export, `dist` as the output, and a rewrite
-so a link straight to a bill opens instead of 404ing.
+The [web demo](https://mrnednick.github.io/split-bill/) is the Expo web export
+built with `EXPO_BASE_URL=/split-bill` (read in `app.config.js`), with
+`index.html` copied to `404.html` so a link straight to a bill opens the app.
+A plain `npm run build:web` still targets a domain root, and `vercel.json` is
+kept for that case:
 
 ```bash
 npx vercel deploy --prod
 ```
-
-There is no public link yet — the repository is private. Lighthouse on the local
-production build reports **100 performance / 100 accessibility / 100 best
-practices**.
 
 ## Known limits
 

@@ -4,6 +4,14 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   check:
@@ -33,3 +41,35 @@ jobs:
       # without a web fallback breaks here rather than on the demo link.
       - name: Build for web
         run: npm run build:web
+        env:
+          # The demo lives at /split-bill/ on GitHub Pages.
+          EXPO_BASE_URL: /split-bill
+
+      # Pages answers an unknown path with 404.html, so a link straight to a
+      # bill opens the app and the router takes it from there. `_expo/` must
+      # not be treated as a Jekyll-private folder.
+      - name: Prepare for Pages
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: check
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/configure-pages@v5
+      - uses: actions/deploy-pages@v4
+        id: deployment
