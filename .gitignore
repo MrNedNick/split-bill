@@ -43,5 +43,4 @@ example
 /android
 
 # local tooling config
-.claude/
 .vscode/
