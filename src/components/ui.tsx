@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   View,
+  useWindowDimensions,
   type PressableProps,
   type TextInputProps,
   type TextProps,
@@ -13,9 +14,34 @@ import { radius, spacing, useTheme } from '../lib/theme'
 
 /** The primitives this app is built from. Written for this stack, not imported. */
 
-export function Screen({ style, ...rest }: ViewProps) {
+/** Widest the content gets: on a laptop the app stays a phone-width column. */
+export const COLUMN = 600
+
+export function useWide() {
+  return useWindowDimensions().width >= 768
+}
+
+export function Screen({ style, children, ...rest }: ViewProps) {
   const colors = useTheme()
-  return <View style={[{ flex: 1, backgroundColor: colors.background }, style]} {...rest} />
+  const wide = useWide()
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }} {...rest}>
+      <View
+        style={[
+          {
+            flex: 1,
+            width: '100%',
+            maxWidth: COLUMN,
+            alignSelf: 'center',
+            paddingTop: wide ? spacing.lg : 0,
+          },
+          style,
+        ]}
+      >
+        {children}
+      </View>
+    </View>
+  )
 }
 
 export function Card({ style, ...rest }: ViewProps) {
@@ -27,7 +53,7 @@ export function Card({ style, ...rest }: ViewProps) {
           backgroundColor: colors.surface,
           borderColor: colors.border,
           borderWidth: 1,
-          borderRadius: radius.md,
+          borderRadius: radius.lg,
           padding: spacing.lg,
           gap: spacing.md,
         },
@@ -45,6 +71,21 @@ export function Title({ style, tone = 'default', ...rest }: TitleProps) {
   return (
     <Text
       style={[{ fontSize: 20, fontWeight: '700', color: colors.text, letterSpacing: -0.2 }, style]}
+      {...rest}
+    />
+  )
+}
+
+/** The one big line on a screen. */
+export function Display({ style, ...rest }: TextProps) {
+  const colors = useTheme()
+  return (
+    <Text
+      accessibilityRole="header"
+      style={[
+        { fontSize: 30, lineHeight: 36, fontWeight: '800', color: colors.text, letterSpacing: -0.6 },
+        style,
+      ]}
       {...rest}
     />
   )

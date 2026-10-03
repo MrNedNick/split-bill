@@ -120,3 +120,18 @@ describe('the whole scenario, at the level the screens drive', () => {
     expect(useBills.getState().bills.map((bill) => bill.title)).toEqual(['Second', 'First'])
   })
 })
+
+describe('the example bill', () => {
+  it('seats four people and adds up to the total, to the cent', () => {
+    const billId = useBills.getState().createExample()
+    const bill = useBills.getState().bills.find((item) => item.id === billId)!
+    expect(bill.participants.map((p) => p.name)).toEqual(['Anna', 'Ben', 'Chris', 'Dana'])
+    expect(new Set(bill.participants.map((p) => p.id)).size).toBe(4)
+    const settlement = settle(bill)
+    // Only the water is split between everyone; every other dish has its people.
+    expect(settlement.unassigned.map((item) => item.label)).toEqual(['Sparkling water'])
+    expect(settlement.subtotal).toBe(9500)
+    // Shares always add up to the total, to the cent.
+    expect(settlement.shares.reduce((sum, share) => sum + share.total, 0)).toBe(settlement.total)
+  })
+})

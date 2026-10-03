@@ -45,6 +45,8 @@ export interface BillsState {
   setRoundUp: (billId: string, roundUp: boolean) => void
   /** Starts a new bill with the same people and none of the items. */
   repeatCompany: (billId: string, title: string) => string
+  /** A filled-in dinner for four, to see how splitting works before typing anything. */
+  createExample: () => string
 }
 
 function patchBill(bills: Bill[], billId: string, change: (bill: Bill) => Bill): Bill[] {
@@ -152,6 +154,28 @@ export const useBills = create<BillsState>()(
 
       setRoundUp: (billId, roundUp) =>
         set({ bills: patchBill(get().bills, billId, (bill) => ({ ...bill, roundUp })) }),
+
+      createExample: () => {
+        const names = ['Anna', 'Ben', 'Chris', 'Dana']
+        const billId = get().createBill(
+          'Dinner at Osteria · example',
+          names.map((name) => ({ id: '', name })),
+        )
+        const bill = get().bills.find((b) => b.id === billId)!
+        const [anna, ben, chris, dana] = bill.participants.map((p) => p.id)
+        const dishes: [string, Cents, string[]][] = [
+          ['Margherita', 1150, [anna!]],
+          ['Carbonara', 1400, [ben!]],
+          ['Risotto', 1650, [chris!]],
+          ['Salad', 950, [dana!]],
+          ['Bottle of Chianti', 3200, [anna!, ben!, chris!]],
+          ['Tiramisu to share', 750, [anna!, dana!]],
+          ['Sparkling water', 400, []],
+        ]
+        for (const [label, cents, sharedBy] of dishes) get().addItem(billId, label, cents, sharedBy)
+        get().setTip(billId, { kind: 'percent', value: 10 })
+        return billId
+      },
 
       repeatCompany: (billId, title) => {
         const source = get().bills.find((bill) => bill.id === billId)

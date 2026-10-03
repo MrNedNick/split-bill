@@ -8,8 +8,12 @@ screens as the iOS app, running in the browser.
 
 <p>
   <img src="docs/bill.png" alt="The bill screen: people, items and who shares each one" width="290" />
-  <img src="docs/summary.png" alt="The summary: per-person totals, tip and the shareable text" width="290" />
+  <img src="docs/summary.png" alt="The summary in the dark theme: per-person totals and tip" width="290" />
 </p>
+
+On a laptop it stays an app — a phone-width column in the middle, not a form stretched edge to edge. The first screen has **Try an example bill**: a dinner for four, already split, to see how it works before typing anything.
+
+<img src="docs/desktop.png" alt="The summary on a 1280 px screen: the same column, centred" width="600" />
 
 One codebase, two targets: React Native on iOS and the same screens on the web.
 

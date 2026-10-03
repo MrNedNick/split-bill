@@ -16,6 +16,9 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: colors.surface },
           headerTintColor: colors.text,
           headerTitleStyle: { fontWeight: '700' },
+          // Content is a centred column on wide screens; the title sits over it.
+          headerTitleAlign: 'center',
+          headerShadowVisible: false,
           contentStyle: { backgroundColor: colors.background },
         }}
       >

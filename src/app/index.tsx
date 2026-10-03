@@ -1,7 +1,7 @@
 import { Link, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { FlatList, Pressable, View } from 'react-native'
-import { Body, Button, Card, EmptyState, Field, Row, Screen, Skeleton, Title } from '../components/ui'
+import { Body, Button, Card, Display, EmptyState, Field, Row, Screen, Skeleton } from '../components/ui'
 import { formatMoney } from '../lib/money'
 import { settle } from '../lib/settle'
 import { spacing, useTheme } from '../lib/theme'
@@ -13,6 +13,7 @@ export default function BillsScreen() {
   const bills = useBills((state) => state.bills)
   const hydrated = useBills((state) => state.hydrated)
   const createBill = useBills((state) => state.createBill)
+  const createExample = useBills((state) => state.createExample)
   const [title, setTitle] = useState('')
 
   const rows = useMemo(
@@ -25,6 +26,8 @@ export default function BillsScreen() {
     [bills],
   )
 
+  const example = () => router.push(`/bill/${createExample()}`)
+
   const start = () => {
     const id = createBill(title)
     setTitle('')
@@ -34,12 +37,14 @@ export default function BillsScreen() {
   return (
     <Screen>
       <View style={{ padding: spacing.lg, gap: spacing.lg, flex: 1 }}>
-        <Card>
-          <Title>Split a bill</Title>
-          <Body tone="soft">
-            Add who was there, what was ordered, and who shared what. Everything stays on this
-            device — no account, no server.
+        <View style={{ gap: spacing.sm, paddingTop: spacing.sm }}>
+          <Display>Split a bill</Display>
+          <Body tone="soft" style={{ fontSize: 17, lineHeight: 24 }}>
+            Who ate what, who owes what — a restaurant bill split fairly in a minute. No account,
+            nothing leaves this device.
           </Body>
+        </View>
+        <Card>
           <Row>
             <Field
               label="New bill"
@@ -51,6 +56,7 @@ export default function BillsScreen() {
             />
           </Row>
           <Button title="Start a bill" onPress={start} />
+          <Button title="Try an example bill" variant="outline" onPress={example} />
         </Card>
 
         {!hydrated ? (
