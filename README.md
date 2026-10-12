@@ -90,7 +90,7 @@ npm run web          # the same app in a browser
 ```bash
 npm run lint
 npm run typecheck
-npm test             # 27 tests
+npm test             # 28 tests
 npm run build:web    # static export into dist/
 ```
 
@@ -98,7 +98,7 @@ Node 22.
 
 ## Tests
 
-Twenty-seven, split by what they protect:
+Twenty-eight, split by what they protect:
 
 - **The maths** — parsing prices, splitting an amount so it always adds up, and
   rounding a share up to a whole unit.

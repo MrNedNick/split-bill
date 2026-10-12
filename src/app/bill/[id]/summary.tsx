@@ -90,7 +90,7 @@ export default function SummaryScreen() {
           <Row style={{ alignItems: 'flex-end' }}>
             <Field
               label="Or a fixed amount"
-              placeholder="5.00"
+              placeholder="e.g. 5.00"
               value={customTip}
               inputMode="decimal"
               keyboardType="decimal-pad"
